@@ -218,6 +218,15 @@ function validateSessionParams(params) {
         return 'mode=setup 不能传 amount / amount_major / line_items / currency / quantity（setup 只收集支付方式，不扣款）';
     }
 
+    // 🚨 订阅必须有 price_data.recurring：顶层 amount / amount_major 构造路径只产
+    //    { currency, unit_amount, product_data }，从不补 recurring（见
+    //    stripeService._buildSessionParams 的金额分支），放行后 Stripe 直接 400，
+    //    调用方只拿到上游原始报错。这条约束原本只在 line_items 分支里校验
+    //    （utils/lineItems「订阅模式必须带 recurring」），顶层金额路径整个被跳过。
+    if (params.mode === 'subscription' && params.line_items === undefined) {
+        return 'mode=subscription 必须用 line_items 传 price_data.recurring（顶层 amount / amount_major 不支持订阅）';
+    }
+
     // 🚨 line_items 与顶层金额 / 数量口径互斥：service 的
     //    `let items = lineItems; if (!items) {...}` 在 line_items 存在时会跳过
     //    整个金额构造分支，调用方声明的 amount / quantity 被静默丢弃，实际扣款
@@ -515,7 +524,7 @@ exports.webhook = async (req, res) => {
  * 本地联调要放开匿名调用，必须显式设 `ALLOW_ANONYMOUS_DEV=true`（默认关闭），
  * 且每次放行都会打 warn —— 不允许「静默放行」。
  *
- * ⚠️ 回调路由（/stripe/webhook）不挂此中间件，改由签名保证可信。
+ * ⚠️ 回调路由（/notify）不挂此中间件，改由签名保证可信。
  */
 /**
  * 是否运行在云端运行时（云函数 / 云托管容器）
