@@ -391,9 +391,9 @@ Absence/presence in `tcb --help` is **not** the criterion — the table below is
 | `tcb service` | ✗ | — | 🚫 **Not recommended** (product decision, no marker) → use `tcb routes` / `tcb domains` |
 | `tcb cloudfunction` / `tcb cloudrunfunction` | ✗ | — | 🚫 **Not recommended** (legacy families, no marker) → use `tcb fn` |
 | `tcb permission` | ✓ | `[已下线]` | ⛔ Offline — calling it only prints a migration notice → use `tcb policy` |
-| `tcb pull` | ✗ | `已废弃` | ⛔ Offline since 2026-11 — only prints a migration notice, exits `1` → clone the examples repo / `tcb ai --setup` |
-| `tcb init` without `--without-template`, and `tcb init --template <name>` | ✗ | `--template` 标 `已废弃` | ⛔ Template branch offline — exits `1` → `tcb init --without-template` then `tcb ai --setup` |
-| `tcb new <appName>` with no Git URL | ✗ | — | ⛔ Built-in template branch offline — exits `1` → `tcb new <appName> <git-url>` |
+| `tcb pull` | ✗ | `已废弃` | ⛔ Offline since 2026-11 — only prints a migration notice, exits `1` → `tcb ai --template <name>` or clone the examples repo |
+| `tcb init` without `--without-template`, and `tcb init --template <name>` | ✗ | `--template` 标 `已废弃` | ⛔ Template branch offline — exits `1` → `tcb ai --template <name>`, or `tcb init --without-template` for an empty project |
+| `tcb new <appName>` with no Git URL | ✗ | — | ⛔ Built-in template branch offline — exits `1` → `tcb new <appName> <git-url>`, or `tcb ai --template <name>` |
 | `tcb framework` / `tcb run` / `tcb run:deprecated` | ✗ | `[已废弃]` | ⚠️ Deprecated, will be removed → `tcb app deploy` / `tcb cloudrun` |
 | `tcb fn config` / `tcb fn log` | ✓ | `已废弃` | ⚠️ Deprecated → `tcb config update fn` / `tcb logs search` |
 

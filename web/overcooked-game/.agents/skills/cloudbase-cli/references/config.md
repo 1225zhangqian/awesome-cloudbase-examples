@@ -129,27 +129,29 @@ tcb init --without-template
 # Example code: clone the examples repo, then cd into the matching directory
 git clone --depth 1 https://github.com/TencentCloudBase/awesome-cloudbase-examples
 
-# Template + AI rules/MCP config (writes the IDE rule files into the project)
+# Templates are delivered by `tcb ai` now, not by pull/init/new.
+# Run the wizard once (AI tool + MCP + Skills config), then you can drop a
+# built-in template into the current project:
 tcb ai --setup
-
-# Only AI rules and MCP config
-tcb ai --template rules
+tcb ai --template vue        # miniprogram | react | vue | uniapp | rules
 ```
 
-> ⛔ **Template distribution retired (2026-11).** `tcb pull`, `tcb init` without `--without-template`
+> ⛔ **Old template commands retired (2026-11).** `tcb pull`, `tcb init` without `--without-template`
 > (including `--template <name>`), and `tcb new <appName>` without a Git URL only print a migration
 > notice and exit with code `1`. They cannot succeed — do not suggest them, and do not report them as
-> broken: the capability was retired, the replacement is below.
+> broken: template distribution was consolidated into the examples repo and `tcb ai`. `tcb ai
+> --template <name>` is **still supported** and downloads the same built-in templates; it runs the AI
+> setup wizard first if the toolkit is not configured yet.
 
-| Old built-in template | Example repo directory |
+| Built-in template | Example repo directory (if you want the plain code) |
 | --- | --- |
 | `miniprogram` | `miniprogram/cloudbase-miniprogram-template` |
 | `react` | `web/cloudbase-react-template` |
 | `vue` | `web/cloudbase-vue-template` |
 | `uniapp` | `universal/cloudbase-uniapp-template` |
 
-> ℹ️ `tcb init --without-template`, `tcb new` and `tcb ai` are implemented but **not listed in
-> `tcb --help`**. They are valid commands — do not tell the user they do not exist.
+> ℹ️ `tcb init --without-template` and `tcb new` are implemented but **not listed in `tcb --help`**.
+> They are valid commands — do not tell the user they do not exist.
 
 ### Create a new app / open the console
 
@@ -273,7 +275,7 @@ tcb rollback                                     # revert the standalone CLI one
 | "未知的配置项" | `config get/set` only accepts `isIntl` / `lang` | Do not pass `cloudbaserc.json` keys here |
 | `config diff integration` not supported | `diff` is `fn`-only | Diff integrations manually via `tcb integration list` |
 | Config pushed but function unchanged | `config update` only pushes config, not code | Use `tcb fn code update` / `tcb fn deploy` for code |
-| `tcb pull` / `tcb init` exit `1` with `已下线` | Template distribution retired in 2026-11 | Clone the examples repo, or run `tcb ai --setup` |
+| `tcb pull` / `tcb init` exit `1` with `已下线` | Old template commands retired in 2026-11 | `tcb ai --template <name>` for a built-in template, or clone the examples repo |
 | "not a valid command" for `init --without-template` / `ai` / `new` | These are hidden from `tcb --help` | They are valid — the help list is incomplete |
 | `self-update --version` printed a version and did nothing | `--version` is the global "print version" flag | Use `--target-version <x.y.z>` to pin |
 | `--dir` rejected | `--dir` needs `--scope custom` | Pass `tcb ai --setup --scope custom --dir <path>` |
@@ -285,5 +287,5 @@ tcb rollback                                     # revert the standalone CLI one
 - [ ] Did I use the right half of `tcb config` (local settings vs project sync)?
 - [ ] For site changes: is `isIntl` consistent with the target envId's site?
 - [ ] For `config update`: ran `tcb config diff` and showed the user the changes first?
-- [ ] Did I avoid the retired `tcb pull` / `tcb init <template>` / `tcb new <appName>` and point the user to the examples repo or `tcb ai --setup` instead?
+- [ ] Did I avoid the retired `tcb pull` / `tcb init <template>` / `tcb new <appName>` and point the user to `tcb ai --template <name>` or the examples repo instead?
 - [ ] For `self-update`: got user approval (or pinned a version in CI instead)?
