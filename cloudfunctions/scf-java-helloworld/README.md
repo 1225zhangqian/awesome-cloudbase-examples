@@ -190,7 +190,7 @@ npm install -g @cloudbase/cli
 tcb login
 
 # 初始化项目（如果还没有）
-tcb init
+tcb init --without-template
 
 # 部署云函数
 tcb functions:deploy helloworld --dir ./target/scf-java-helloworld-1.0.0.jar
