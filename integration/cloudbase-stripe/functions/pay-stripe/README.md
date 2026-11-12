@@ -44,6 +44,37 @@ pay-stripe/
 
 > 本地调试专用变量（`PORT` / `ALLOW_ANONYMOUS_DEV`）不会被部署到云端。
 
+### 获取 `stripeSecretKey`
+
+Stripe Dashboard → Developers → API keys：
+
+- 测试：https://dashboard.stripe.com/test/apikeys
+- 生产：https://dashboard.stripe.com/apikeys
+
+建议新建 **Restricted key**（`rk_` 前缀），只勾选 Checkout / Refund 所需写权限，比全权限 `sk_` 更安全。
+
+### 集成中心生成的回调地址在哪看
+
+`stripe-pay` 集成的回调域名和 `/notify` 路径由平台自动生成，**不需要在 `cloudbaserc.json` 里手写 URL**：`integrations` 只接受 `keyId` / `name` / `authTypeCode` / `description` / `demoCodeFunctionName` / `envVariables`（schema 为 `additionalProperties: false`，自己加 `notifyUrl` 会被判非法属性）。
+
+- **控制台创建**：云开发控制台 → 集成中心（https://tcb.cloud.tencent.com/dev#/integration-center/market）→ 进入对应集成详情页，回调地址与关联函数在详情页查看/编辑。
+- **CLI 创建**：`cloudbaserc.json` 的 `integrations` 只声明绑定关系（`demoCodeFunctionName: pay-stripe`），不含回调 URL；创建与推送用 `tcb integration create` / `tcb config update integration`，回调地址同样到控制台集成详情页查看。
+- 平台会把凭证、回调地址等配置以环境变量形式注入函数运行时；需要以代码读取时，以实际函数的环境变量为准。
+
+参考：[集成中心概述](https://docs.cloudbase.net/integration/introduce)、[cloudbaserc integrations 配置](https://docs.cloudbase.net/cli-v1/integration/config)。
+
+### 获取 `stripeWebhookSecret`（`whsec_`）
+
+回调由本函数用 `stripe-signature` 自验签，所以这个值必填。
+
+1. 打开 Webhooks 页面：测试 https://dashboard.stripe.com/test/webhooks ，生产 https://dashboard.stripe.com/webhooks
+2. 点 `Add endpoint`，`Endpoint URL` 填回调地址：
+   - 集成中心模板：`https://<实例>.integration-callback.tcloudbase.com/notify`
+   - 自建域名 / 云托管：`https://<你的域名>/notify`
+3. 在 `Select events` 勾选这 6 个（对应 `EVENT_SEMANTICS`）：`checkout.session.completed`、`checkout.session.expired`、`payment_intent.succeeded`、`payment_intent.payment_failed`、`charge.refunded`、`charge.dispute.created`
+4. 点 `Add endpoint` 创建，进入该 endpoint 详情页复制 **Signing secret**（`whsec_...`）。**只显示一次**，丢失只能删掉 endpoint 重建。
+5. 写入环境变量 `stripeWebhookSecret`。test / live 各建一个 endpoint，两套 `whsec_` 不能混用。
+
 ## 路由
 
 | 路由 | 鉴权 | 说明 |
